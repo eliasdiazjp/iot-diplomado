@@ -1,37 +1,14 @@
-/*
- * Copyright 2016-2022 NXP
- * All rights reserved.
+/*! @file : K32L2B31A_labs_diplomado_IoT.c
+ * @author  Elias Jesus Diaz P
+ * @version 1.0.0
+ * @date    12/11/2022
+ * @brief   Driver para 
+ * @details
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of NXP Semiconductor, Inc. nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/**
- * @file    K32L2B31A_labs_diplomado_IoT.c
- * @brief   Application entry point.
- */
+*/
+/*******************************************************************************
+ * Includes
+ ******************************************************************************/
 #include <stdio.h>
 #include "board.h"
 #include "peripherals.h"
@@ -39,16 +16,28 @@
 #include "clock_config.h"
 #include "K32L2B31A.h"
 #include "fsl_debug_console.h"
-/* TODO: insert other include files here. */
+#include "fsl_adc16.h"
+#include "fsl_device_registers.h"
+#include "fsl_common.h"
+#include "fsl_gpio.h"
 
-/* TODO: insert other definitions and declarations here. */
+#include "lpuart0.h"
+#include "leds.h"
+#include "sens_luz.h"
 
-/*
- * @brief   Application entry point.
- */
+volatile uint32_t g_systickCounter;
+volatile static int i = 0 ;
+
+uint8_t dato_lpuart0;
+
+
+extern uint8_t dato_lpuart0;
+extern uint8_t flag_nuevo_dato_lpuart0;
+
+
 int main(void) {
 
-    /* Init board hardware. */
+/* Hardware de la placa de inicio. */
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
@@ -57,15 +46,39 @@ int main(void) {
     BOARD_InitDebugConsole();
 #endif
 
-    PRINTF("Hello World\n");
-
-    /* Force the counter to be placed into memory. */
-    volatile static int i = 0 ;
-    /* Enter an infinite loop, just incrementing a counter. */
+    led_off_green();
+    led_off_red();
     while(1) {
+
+
         i++ ;
-        /* 'Dummy' NOP to allow source level single stepping of
-            tight while() loop */
+        if(leer_bandera_nuevo_dato()!=0){
+        	PRINTF("Valor en ASCII : %d\r\n", leer_dato());
+        	escribir_bandera_nuevo_dato(0);
+        	if(leer_dato()==82){
+        		/* R=82*/
+        		led_on_red();
+        	  	}
+        	if(leer_dato()==114){
+        		/* r=114*/
+   	      		led_off_red();
+           	  	}
+
+        	if(leer_dato()==86){
+        		/* V=86*/
+  	       		led_on_green();
+          	  	}
+        	if(leer_dato()==118){
+        		/* v=118*/
+   	       		led_off_green();
+           	  	}
+        	if(leer_dato()==76){
+        		/* L=76*/
+        	PRINTF("lux: %f\r\n", Sens_dato());
+        	   	}
+
+        }
+
         __asm volatile ("nop");
     }
     return 0 ;
