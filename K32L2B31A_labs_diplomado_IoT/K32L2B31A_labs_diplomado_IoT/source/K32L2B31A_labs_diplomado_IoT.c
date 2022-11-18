@@ -7,9 +7,19 @@
  *
 */
 /*******************************************************************************
+<<<<<<< HEAD
  /*******************************************************************************
+<<<<<<< HEAD
 ** Includes
  **************************/
+=======
+* Includes
+ ******************************************************************************/
+=======
+ * Includes
+ **************************/
+>>>>>>> modem_ec25
+>>>>>>> develop
 #include <stdio.h>
 #include "board.h"
 #include "peripherals.h"
@@ -132,12 +142,24 @@ int main(void) {
 
     			case FSM_ESTADO_ANALIZA_NUEVO_DATO_LPUART0:
     				switch(leer_dato()){
+<<<<<<< HEAD
     				case 'a':
     					fst_estado_actual=FSM_ESTADO_START_ADC;
     					break;
     				case 's':
     					fst_estado_actual=FSM_ESTADO_ENVIAR_COMANDO_ATI;
     					break;
+=======
+    				case 'x':
+    					fst_estado_actual=FSM_ESTADO_START_ADC;
+    					break;
+    				case 'a':
+    					fst_estado_actual=FSM_ESTADO_ENVIAR_COMANDO_ATI;
+    					break;
+					case 's':
+						fst_estado_actual = FSM_ESTADO_ENVIAR_COMANDO_ATI;
+						break;
+>>>>>>> develop
 					case 'd':
 						fst_estado_actual = FSM_ESTADO_ENVIAR_COMANDO_ATI;
 						break;
@@ -147,10 +169,14 @@ int main(void) {
 					case 'g':
 						fst_estado_actual = FSM_ESTADO_ENVIAR_COMANDO_ATI;
 						break;
+<<<<<<< HEAD
 					case 'h':
 						fst_estado_actual = FSM_ESTADO_ENVIAR_COMANDO_ATI;
 						break;
     				case 'j':
+=======
+    				case 'h':
+>>>>>>> develop
     					borrar_buffer();
     					PRINTF("BUFFER BORRADO");
     					break;
@@ -162,29 +188,49 @@ int main(void) {
     				break;
 
     			case FSM_ESTADO_ENVIAR_COMANDO_ATI:
+<<<<<<< HEAD
 					if (leer_dato()=='s'){
+=======
+					if (leer_dato()=='a'){
+>>>>>>> develop
 						PRINTF("%s",cmd_at[CMD_AT_ATI_Display_Product_Identification_Information]);
 						fst_estado_actual=FSM_ESTADO_INICIO;
 						break;
 						}
 
+<<<<<<< HEAD
 							if (leer_dato() == 'd') {
+=======
+							if (leer_dato() == 's') {
+>>>>>>> develop
 						PRINTF("%s",cmd_at[CMD_AT_AT_GMI_Request_Manufacturer_Identification]);
 						fst_estado_actual = FSM_ESTADO_INICIO;
 						break;
 							}
 
+<<<<<<< HEAD
 					if (leer_dato() == 'f') {
+=======
+					if (leer_dato() == 'd') {
+>>>>>>> develop
 						PRINTF("%s",cmd_at[CMD_AT_AT_GMM_Request_TA_Model_Identification]);
 						fst_estado_actual = FSM_ESTADO_INICIO;
 						break;
 							}
+<<<<<<< HEAD
 					if (leer_dato() == 'g') {
+=======
+					if (leer_dato() == 'f') {
+>>>>>>> develop
 						PRINTF("%s",cmd_at[CMD_AT_AT_GMR_Request_TA_Revision_Identification_of_Software_Release]);
 						fst_estado_actual = FSM_ESTADO_INICIO;
 						break;
 							}
+<<<<<<< HEAD
 					if (leer_dato() == 'h') {
+=======
+					if (leer_dato() == 'g') {
+>>>>>>> develop
 						PRINTF("%s",cmd_at[CMD_AT_AT_GSN_Request_International_Mobile_Equipment_Identity]);
 						fst_estado_actual = FSM_ESTADO_INICIO;
 						break;
