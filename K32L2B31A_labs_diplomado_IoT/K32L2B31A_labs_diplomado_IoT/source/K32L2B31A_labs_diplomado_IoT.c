@@ -15,11 +15,7 @@
 =======
 * Includes
  ******************************************************************************/
-=======
- * Includes
- **************************/
->>>>>>> modem_ec25
->>>>>>> develop
+
 #include <stdio.h>
 #include "board.h"
 #include "peripherals.h"
@@ -53,6 +49,7 @@ enum{
 	FSM_ESTADO_ESPERA_NUEVO_DATO_LPUART0,
 	FSM_ESTADO_ANALIZA_NUEVO_DATO_LPUART0,
 	FSM_ESTADO_ENVIAR_COMANDO_ATI,
+	FMS_ESTADO_ANALIZA_BUFFER,
 	FSM_ESTADO_START_ADC,
 	FSM_ESTADO_ESPERA_TIEMPO_RESULTADO,
 	FSM_ESTADO_CAPTURA_RESULTADO_ADC,
@@ -92,18 +89,14 @@ extern uint8_t flag_nuevo_dato_lpuart0;
 volatile static uint8_t i = 0 ;
 uint8_t fst_estado_actual=FSM_ESTADO_INICIO;
 const char* cmd_at[5]={
-		"ATI\r\n",
-		"AT+GMI\r\n",
-		"AT+GMM\r\n",
-		"AT+GMR\r\n",
-		"AT+GSN\r\n",
+		"ATI\r\n",//identificacion del producto :nombre del fabricante,identificacion del modelo,identificación de la versión del software del producto
+		"AT+GMI\r\n",//nombre del fabricante
+		"AT+GMM\r\n",//identificacion del modelo
+		"AT+GMR\r\n",//identificación de la versión del software del producto
+		"AT+GSN\r\n",//IMEI del producto
 };
 
-uint32_t msg_size;
 iot_nodo_data_t datos_locales;
-
-
-
 
 /***************************
  * Private Source Code
@@ -118,9 +111,12 @@ int main(void) {
 #ifndef BOARD_INIT_DEBUG_CONSOLE_PERIPHERAL
     /* Init FSL debug console. */
     BOARD_InitDebugConsole();
+
 #endif
+        led_off_green();
+        led_off_red();
  while(1) {
-    	switch (fst_estado_actual) {
+    	switch (fst_estado_actual){
     			case FSM_ESTADO_INICIO:
     				//Escribir condiciones iniciales para le ejecución de toda la FSM/
     				datos_locales.data_sensor_luz_adc = 1;
@@ -142,18 +138,11 @@ int main(void) {
 
     			case FSM_ESTADO_ANALIZA_NUEVO_DATO_LPUART0:
     				switch(leer_dato()){
-<<<<<<< HEAD
-    				case 'a':
-    					fst_estado_actual=FSM_ESTADO_START_ADC;
-    					break;
-    				case 's':
-    					fst_estado_actual=FSM_ESTADO_ENVIAR_COMANDO_ATI;
-    					break;
-=======
     				case 'x':
     					fst_estado_actual=FSM_ESTADO_START_ADC;
     					break;
     				case 'a':
+
     					fst_estado_actual=FSM_ESTADO_ENVIAR_COMANDO_ATI;
     					break;
 					case 's':
@@ -169,16 +158,9 @@ int main(void) {
 					case 'g':
 						fst_estado_actual = FSM_ESTADO_ENVIAR_COMANDO_ATI;
 						break;
-<<<<<<< HEAD
-					case 'h':
-						fst_estado_actual = FSM_ESTADO_ENVIAR_COMANDO_ATI;
-						break;
-    				case 'j':
-=======
     				case 'h':
->>>>>>> develop
     					borrar_buffer();
-    					PRINTF("BUFFER BORRADO");
+    					PRINTF("BUFFER_CLEARED");
     					break;
     				default://dato ilegal
     					fst_estado_actual=FSM_ESTADO_INICIO;
@@ -194,17 +176,14 @@ int main(void) {
 					if (leer_dato()=='a'){
 >>>>>>> develop
 						PRINTF("%s",cmd_at[CMD_AT_ATI_Display_Product_Identification_Information]);
-						fst_estado_actual=FSM_ESTADO_INICIO;
+
+						fst_estado_actual=FMS_ESTADO_ANALIZA_BUFFER;
 						break;
 						}
 
-<<<<<<< HEAD
-							if (leer_dato() == 'd') {
-=======
 							if (leer_dato() == 's') {
->>>>>>> develop
 						PRINTF("%s",cmd_at[CMD_AT_AT_GMI_Request_Manufacturer_Identification]);
-						fst_estado_actual = FSM_ESTADO_INICIO;
+						fst_estado_actual = FMS_ESTADO_ANALIZA_BUFFER;
 						break;
 							}
 
@@ -214,7 +193,7 @@ int main(void) {
 					if (leer_dato() == 'd') {
 >>>>>>> develop
 						PRINTF("%s",cmd_at[CMD_AT_AT_GMM_Request_TA_Model_Identification]);
-						fst_estado_actual = FSM_ESTADO_INICIO;
+						fst_estado_actual = FMS_ESTADO_ANALIZA_BUFFER;
 						break;
 							}
 <<<<<<< HEAD
@@ -223,7 +202,7 @@ int main(void) {
 					if (leer_dato() == 'f') {
 >>>>>>> develop
 						PRINTF("%s",cmd_at[CMD_AT_AT_GMR_Request_TA_Revision_Identification_of_Software_Release]);
-						fst_estado_actual = FSM_ESTADO_INICIO;
+						fst_estado_actual = FMS_ESTADO_ANALIZA_BUFFER;
 						break;
 							}
 <<<<<<< HEAD
@@ -232,9 +211,31 @@ int main(void) {
 					if (leer_dato() == 'g') {
 >>>>>>> develop
 						PRINTF("%s",cmd_at[CMD_AT_AT_GSN_Request_International_Mobile_Equipment_Identity]);
-						fst_estado_actual = FSM_ESTADO_INICIO;
+						fst_estado_actual = FMS_ESTADO_ANALIZA_BUFFER;
 						break;
 							}
+
+    			case FMS_ESTADO_ANALIZA_BUFFER:
+    				anailiza_buffer();
+    				    if(anailiza_buffer()==1){
+    				    	PRINTF("no hay problemas");
+    				    	borrar_buffer();
+    				    	fst_estado_actual = FSM_ESTADO_INICIO;
+
+    				    }
+    				    if(anailiza_buffer()==2){
+    				       PRINTF("hay un problema");
+    				       borrar_buffer();
+    				       fst_estado_actual = FSM_ESTADO_INICIO;
+
+    				        				    }
+
+    				    break;
+
+
+
+
+
     			case FSM_ESTADO_START_ADC:
     				//Genera señal de START para tomar dato ADC/
     				ADC16_SetChannelConfig(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP, &ADC0_channelsConfig[0]);
@@ -250,11 +251,13 @@ int main(void) {
     				break;
 
     			case FSM_ESTADO_CAPTURA_RESULTADO_ADC:
+    				// captura el dato adc en una variable
     				datos_locales.data_sensor_luz_adc = ADC16_GetChannelConversionValue(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP);
     				fst_estado_actual=FSM_ESTADO_CAPTURA_IMPRIME_RESULTADO_ADC;
     				break;
 
     			case FSM_ESTADO_CAPTURA_IMPRIME_RESULTADO_ADC:
+    				//imprime el dato adc
     				PRINTF("data_sensor_luz_adc: %d\r\n",datos_locales.data_sensor_luz_adc);
     				fst_estado_actual=FSM_ESTADO_INICIO;
     				break;

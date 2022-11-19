@@ -39,6 +39,7 @@
 static uint8_t flag_nuevo_dato_lpuart0=0;
 static uint8_t dato_lpuart0[LPUART0_BUFFER_SIZE_MAX];
 static uint8_t dato_lpuart0_index=0;
+static uint8_t lp=0;
 /***************************
  * Private Source Code
  **************************/
@@ -86,6 +87,21 @@ uint8_t leer_bandera_nuevo_dato(void){
  void  escribir_bandera_nuevo_dato(uint8_t nuevo_valor){
  	 flag_nuevo_dato_lpuart0 = nuevo_valor;
   }
+ uint8_t anailiza_buffer(void){
+	 for(uint8_t i; i<50; i++){
+		 if(dato_lpuart0[i]==79 && dato_lpuart0[i+1]==75){
+			 lp=1;
+			 return(lp);
+
+		 }
+		 if(dato_lpuart0[i]==69 && dato_lpuart0[i+1]==82 && dato_lpuart0[i+2]==82){
+		 			 lp=2;
+		 			 return(lp);
+
+		 		 }
+
+	 }
+ }
 
  void borrar_buffer(void){
  	for(uint8_t i; i<LPUART0_BUFFER_SIZE_MAX; i++){
