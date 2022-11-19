@@ -45,6 +45,7 @@
  **************************/
 uint8_t leer_dato(void);
 uint8_t leer_bandera_nuevo_dato(void);
+uint8_t anailiza_buffer(void);
 void  escribir_bandera_nuevo_dato(uint8_t nuevo_valor);
 
 #endif
